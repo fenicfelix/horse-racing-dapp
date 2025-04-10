@@ -33,15 +33,15 @@ contract HorseRegistry {
     function registerHorse(string memory name, uint256 speed, HorseBreed breed) external returns (uint256) {
         // performing checks on the input parameters
         require(speed > 0 && speed <= 100, "Invalid speed");
-        nextHorseId = nextHorseId++;
+        uint256 horseId = nextHorseId++;
 
         // Register the horse with default status as registered
-        horses[nextHorseId] = Horse(name, speed, breed, true);
+        horses[horseId] = Horse(name, speed, breed, true);
 
         // Emit the HorseRegistered event with the horse ID, name, and owner address
-        emit HorseRegistered(nextHorseId, name, msg.sender, breed);
+        emit HorseRegistered(horseId, name, msg.sender, breed);
 
-        return nextHorseId;
+        return horseId;
     }
 
     // Update horse details

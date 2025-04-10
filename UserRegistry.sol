@@ -31,16 +31,16 @@ contract UserRegistry is AccessControl {
 
     function registerUser(string memory name, address userAddress, bytes32 role) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
         // check if the user is already registered
-        nextUserId = nextUserId++;
+        uint256 userId = nextUserId++;
         for (uint256 i = 1; i < 1000; i++) {
             if (users[i].account == userAddress) {
                 revert("User already registered");
             }
         }
 
-        users[nextUserId] = User(nextUserId, userAddress, name, role, 0, true);
-        emit UserRegistered(nextUserId, name, userAddress);
-        return nextUserId;
+        users[userId] = User(userId, userAddress, name, role, 0, true);
+        emit UserRegistered(userId, name, userAddress);
+        return userId;
     }
 
     function getUser(uint256 userId) external view returns (User memory) {

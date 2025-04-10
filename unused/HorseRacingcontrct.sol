@@ -90,7 +90,7 @@ contract HorseRacing is VRFV2WrapperConsumerBase, Ownable {
         uint256 _maxHorses,
         TrackCondition _trackCondition
     ) external onlyOwner {
-        nextRaceId = nextRaceId++;
+        uint256 raceId = nextRaceId++;
         races[nextRaceId] = Race({
             entryFee: _entryFee,
             prizePool: 0,
@@ -102,8 +102,8 @@ contract HorseRacing is VRFV2WrapperConsumerBase, Ownable {
             startTime: 0
         });
 
-        emit RaceCreated(nextRaceId, _entryFee, _maxHorses);
-        emit RaceStatusChanged(nextRaceId, RaceStatus.OPEN);
+        emit RaceCreated(raceId, _entryFee, _maxHorses);
+        emit RaceStatusChanged(raceId, RaceStatus.OPEN);
     }
 
     function registerHorse(
@@ -119,8 +119,8 @@ contract HorseRacing is VRFV2WrapperConsumerBase, Ownable {
         require(race.horseIds.length < race.maxHorses, "Race full");
         require(speed > 0 && speed <= 100, "Invalid speed rating");
 
-        nextHorseId = nextHorseId++;
-        horses[nextHorseId] = Horse({
+        uint256 horseId = nextHorseId++;
+        horses[horseId] = Horse({
             name: name,
             owner: msg.sender,
             speed: speed,
@@ -128,10 +128,10 @@ contract HorseRacing is VRFV2WrapperConsumerBase, Ownable {
             registered: true
         });
 
-        race.horseIds.push(nextHorseId);
+        race.horseIds.push(horseId);
         race.prizePool += msg.value;
 
-        emit HorseRegistered(raceId, nextHorseId, name, breed);
+        emit HorseRegistered(raceId, horseId, name, breed);
     }
 
     function startRace(uint256 raceId) external onlyOwner {
