@@ -9,9 +9,9 @@ contract BetRegistry {
     struct Bet {
         uint256 id; // Name of the horse
         uint256 raceId; // Race ID associated with the bet
-        uint256 userId; // Speed of the horse (1-100)
+        uint256 userId; // User ID associated with the bet
         uint256 horseId; // Horse ID associated with the bet
-        uint256 amount; // Enum value representing the breed
+        uint256 amount; // Bet amount
         bool paidOut; // Indicates if the horse is registered or not
     }
 

@@ -78,7 +78,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         emit RaceCreated(raceId, entryFee);
     }
 
-    function placeBet(uint256 raceId, uint bettorId, uint256 horseId) external {
+    function placeBet(uint256 raceId, uint bettorId, uint256 horseId) external payable {
         Race storage race = races[raceId];
         require(race.status == RaceStatus.OPEN, "Race not open");
 
