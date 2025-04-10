@@ -9,7 +9,7 @@ contract HorseRacing is VRFV2WrapperConsumerBase {
     ERC20 public raceToken;
     HorseRegistry public horseRegistry;
 
-    enum RaceStatus { OPEN, CLOSED, IN_PROGRESS, COMPLETED }
+    enum RaceStatus { OPEN, LOCKED, IN_PROGRESS, COMPLETED, NULLIFIED }
 
     struct Race {
         uint256 entryFee;
@@ -69,8 +69,7 @@ contract HorseRacing is VRFV2WrapperConsumerBase {
         Race storage race = races[raceId];
         require(race.status == RaceStatus.OPEN, "Race not open");
 
-        ( , address owner, , , bool registered) = horseRegistry.horses(horseId);
-        require(owner == msg.sender && registered, "Not your horse");
+        ( , , , bool registered) = horseRegistry.horses(horseId);
 
         raceToken.transferFrom(msg.sender, address(this), race.entryFee);
         race.prizePool += race.entryFee;
@@ -113,7 +112,7 @@ contract HorseRacing is VRFV2WrapperConsumerBase {
         request.fulfilled = true;
         request.randomWords = randomWords;
 
-        (, address winner, , , ) = horseRegistry.horses(race.winningHorse);
+        (, , , bool registered) = horseRegistry.horses(race.winningHorse);
         raceToken.transfer(winner, (race.prizePool * 90) / 100); // Winner gets 90%
 
         emit RaceCompleted(request.raceId, race.winningHorse);
