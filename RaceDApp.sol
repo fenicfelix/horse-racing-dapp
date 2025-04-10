@@ -49,15 +49,11 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     event RaceOutcomeFound(uint256 raceId, uint256 winningHorse);
     event RacePayoutCompleted(uint256 raceId, uint256 horseId);
 
+    address constant LINK_ADDRESS = 0x779877A7B0D9E8603169DdbD7836e478b4624789; // Sepolia Testnet LINK token address
+    address constant VRF_WRAPPER_ADDRESS = 0xab18414CD93297B0d12ac29E63Ca20f515b3DB46; // Sepolia Testnet VRF Wrapper address
 
-    constructor(
-        address _vrfWrapper,
-        address _linkToken
-        // address _raceToken,
-        // address _horseRegistry
-    )
-        VRFV2WrapperConsumerBase(_linkToken, _vrfWrapper)
-    {
+
+    constructor() VRFV2WrapperConsumerBase(LINK_ADDRESS, VRF_WRAPPER_ADDRESS) {
         // raceToken = ERC20(_raceToken);
         // horseRegistry = HorseRegistry(_horseRegistry);
     }
