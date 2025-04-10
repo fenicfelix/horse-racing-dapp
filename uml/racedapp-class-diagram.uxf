@@ -20,13 +20,13 @@ NULLIFIED</panel_attributes><additional_attributes></additional_attributes></ele
 --
 + createRace(uint256)
 + placeBet(raceId: uint256, amount:uint256): bool
-+ lockBets(raceId: uint256): void
-+ startRace(raceId: uint256): void
++ lockRace(raceId: uint256): void
 + auditRace(raceId: uint256): bool
++ startRace(raceId: uint256): void
 + declareWinnner(raceId: uint256): bool
 + fulfillRandomWords(uint256, uint256[])
 + verifyVRFProof(raceId: uint256)
-+ announceWinner(raceId: uint256)
++ announceWinners(raceId: uint256)
 + performPayout(raceId: uint256)
 + getRaceHorses()
 + getRaceStatus(uint256)

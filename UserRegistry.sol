@@ -51,6 +51,14 @@ contract UserRegistry is AccessControl {
         return users[userId];
     }
 
+    function getBalance(uint256 userId) external view returns (uint256) {
+        // check if the user is already registered
+        if (users[userId].account == address(0)) {
+            revert("User not registered");
+        }
+        return users[userId].balance;
+    }
+
 
     function updateUser(uint256 userId, string memory name, address userAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         // check if the user is already registered
