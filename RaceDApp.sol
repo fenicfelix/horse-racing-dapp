@@ -107,6 +107,15 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         Race storage race = races[raceId];
         require(race.status == RaceStatus.LOCKED, "The race can not be audited");
         require(race.horseIds.length >= 2, "The race needs at least two players.");
+
+        // the totalPool in a race should be equal to the product of the bets placed and the entry fee
+        uint256 totalPool = 0;
+        BetRegistry betRegistry = BetRegistry(msg.sender);
+        BetRegistry.Bet[] memory bets = betRegistry.getBetsByRaceId(raceId);
+        for (uint256 i = 0; i < bets.length; i++) {
+            totalPool += bets[i].amount;
+        }
+        require(totalPool == race.totalPool, "Total pool does not match the bets placed");
         
         race.status = RaceStatus.AUDITED;
         race.auditor = userId;
@@ -195,7 +204,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         return races[raceId].status;
     }
 
-    function withdrawFees(address to) external { // Add ownable
+    function withdrawFees(address to) external payable { // Add ownable
         // Only the owner can withdraw fees
         raceToken.transfer(to, raceToken.balanceOf(address(this)));
     }
