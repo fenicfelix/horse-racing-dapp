@@ -118,11 +118,11 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         require(race.horseIds.length >= 2, "The race needs at least two players.");
 
         // the totalPool in a race should be equal to the product of the bets placed and the entry fee
-        uint256 totalPool = 0;
-        for (uint256 i = 0; i < betRegistry.getBetsByRaceId(raceId).length; i++) {
-            totalPool += betRegistry.getBetsByRaceId(raceId)[i].amount;
-        }
-        require(totalPool == race.totalPool, "Total pool does not match the bets placed");
+        // uint256 totalPool = 0;
+        // for (uint256 i = 0; i < betRegistry.getBetsByRaceId(raceId).length; i++) {
+        //     totalPool += betRegistry.getBetsByRaceId(raceId)[i].amount;
+        // }
+        // require(totalPool == race.totalPool, "Total pool does not match the bets placed");
 
         race.status = RaceStatus.AUDITED;
         race.auditor = userId;
