@@ -12,7 +12,6 @@ contract UserRegistry is AccessControl {
         address account; // User's wallet address
         string name; // User's name
         bytes32 role; // User's role (e.g., bettor, auditor)
-        uint256 balance; // User's token balance
         bool active; // User's status (active/inactive)
     }
 
@@ -38,7 +37,7 @@ contract UserRegistry is AccessControl {
             }
         }
 
-        users[userId] = User(userId, userAddress, name, role, 0, true);
+        users[userId] = User(userId, userAddress, name, role, true);
         emit UserRegistered(userId, name, userAddress);
         return userId;
     }
@@ -51,12 +50,8 @@ contract UserRegistry is AccessControl {
         return users[userId];
     }
 
-    function getBalance(uint256 userId) external view returns (uint256) {
-        // check if the user is already registered
-        if (users[userId].account == address(0)) {
-            revert("User not registered");
-        }
-        return users[userId].balance;
+    function getBalance(address userAddress) external view returns (uint256) {
+        return userAddress.balance;
     }
 
 
