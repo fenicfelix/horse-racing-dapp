@@ -26,13 +26,7 @@ contract BetRegistry {
     event BetPlaced(uint256 betId, uint256 userId, uint256 amount);
     event BetPaidOut(uint256 betId, uint256 userId, uint256 amount);
 
-    function placeBet(uint256 raceId, uint256 userId, uint256 horseId, uint256 amount) external returns (uint256) {
-        // Perform validations
-        require(UserRegistry(msg.sender).getUser(userId).active, "Invalid user");
-        require(HorseRegistry(msg.sender).getHorse(horseId).registered, "Horse not registered");
-
-        require(amount > 0, "Invalid bet amount");
-
+    function recordBet(uint256 raceId, uint256 userId, uint256 horseId, uint256 amount) external returns (uint256) {
         uint256 betId = nextBetId++;
         bets[betId] = Bet(raceId, betId, userId, horseId, amount, false);
         userBets[userId].push(betId);

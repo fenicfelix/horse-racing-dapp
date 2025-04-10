@@ -11,6 +11,8 @@ import "./RacingToken.sol"; // Your UserRegistry contract
 contract RaceDApp is VRFV2WrapperConsumerBase {
     ERC20 public raceToken;
     HorseRegistry public horseRegistry;
+    UserRegistry public userRegistry;
+    BetRegistry public betRegistry;
 
     uint256 constant public WINNER_PERCENTAGE = 90; // 90% of the prize pool goes to the winner
 
@@ -53,10 +55,18 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     address constant VRF_WRAPPER_ADDRESS = 0xab18414CD93297B0d12ac29E63Ca20f515b3DB46; // Sepolia Testnet VRF Wrapper address
 
 
-    constructor() VRFV2WrapperConsumerBase(LINK_ADDRESS, VRF_WRAPPER_ADDRESS) {
-        // raceToken = ERC20(_raceToken);
-        // horseRegistry = HorseRegistry(_horseRegistry);
+    constructor(
+        address _raceToken,
+        address _horseRegistry,
+        address _userRegistry,
+        address _betRegistry
+    ) VRFV2WrapperConsumerBase(LINK_ADDRESS, VRF_WRAPPER_ADDRESS) {
+        raceToken = ERC20(_raceToken);
+        horseRegistry = HorseRegistry(_horseRegistry);
+        userRegistry = UserRegistry(_userRegistry);
+        betRegistry = BetRegistry(_betRegistry);
     }
+
 
     function createRace(uint256 entryFee) external {
         uint256 raceId = nextRaceId++;
@@ -74,43 +84,26 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         emit RaceCreated(raceId, entryFee);
     }
 
-    function placeBet(uint256 raceId, uint bettorId, uint256 horseId) external payable {
+    function placeBet(uint256 raceId, uint256 bettorId, uint256 horseId) external {
         Race storage race = races[raceId];
         require(race.status == RaceStatus.OPEN, "Race not open");
 
-        BetRegistry betRegistry = BetRegistry(msg.sender);
-        ( , , , bool registered) = horseRegistry.horses(horseId);
+        (, , , bool registered) = horseRegistry.horses(horseId);
         require(registered, "Horse not registered");
 
-        UserRegistry userRegistry = UserRegistry(msg.sender);
-        require(userRegistry.getUser(bettorId).active, "User not found");
-        require(userRegistry.getUser(bettorId).active, "User not active");
-        require(userRegistry.getUser(bettorId).balance > race.entryFee, "Not enough balance");
+        require(userRegistry.getUser(bettorId).active, "User not found or inactive");
+        require(address(this).balance > race.entryFee, "Not enough balance in contract");
+        require(raceToken.transferFrom(msg.sender, address(this), race.entryFee), "Token transfer failed");
 
-        // Transfer ERC20 tokens
-        require(
-            raceToken.transferFrom(msg.sender, address(this), race.entryFee),
-            "Payment failed"
-        );
         
+        betRegistry.recordBet(raceId, bettorId, horseId, race.entryFee);
 
-        betRegistry.placeBet(raceId, bettorId, horseId, race.entryFee);
-
-        // increase race total pool
         race.totalPool += race.entryFee;
-        race.prizePool += race.entryFee * (WINNER_PERCENTAGE / 100); // 90% of the prize pool goes to the winner
+        race.prizePool += (race.entryFee * WINNER_PERCENTAGE) / 100;
 
-        if (address(raceToken) == address(0)) {
-            // Native ETH mode
-            require(msg.value == race.entryFee, "Incorrect ETH amount");
-        } else {
-            // ERC20 mode
-            require(msg.value == 0, "ETH not accepted");
-            require(raceToken.transferFrom(msg.sender, address(this), race.entryFee), "Token transfer failed");
-        }
-        
         emit BetPlaced(raceId, horseId, bettorId, race.prizePool);
     }
+       
 
     function lockRace(uint256 raceId) public {
         require(races[raceId].status == RaceStatus.OPEN, "Can not lock the bets for this race");
@@ -126,7 +119,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
 
         // the totalPool in a race should be equal to the product of the bets placed and the entry fee
         uint256 totalPool = 0;
-        BetRegistry betRegistry = BetRegistry(msg.sender);
+        betRegistry = BetRegistry(msg.sender);
         BetRegistry.Bet[] memory bets = betRegistry.getBetsByRaceId(raceId);
         for (uint256 i = 0; i < bets.length; i++) {
             totalPool += bets[i].amount;
@@ -186,7 +179,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         (, , , bool registered) = horseRegistry.horses(race.winningHorse);
         require(registered, "Winning horse not registered");
 
-        BetRegistry betRegistry = BetRegistry(msg.sender);
+        betRegistry = BetRegistry(msg.sender);
         BetRegistry.Bet[] memory bets = betRegistry.getBetsByRaceId(raceId);
         
         // First pass: Count winners and validate
