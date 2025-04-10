@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol"; // Full ERC20
 import "./HorseRegistry.sol"; // Your HorseRegistry contract
 import "./UserRegistry.sol"; // Your UserRegistry contract
 import "./BetRegistry.sol"; // Your UserRegistry contract
-import "./RacingDAppToken.sol"; // Your UserRegistry contract
+import "./RacingToken.sol"; // Your UserRegistry contract
 
 contract RaceDApp is VRFV2WrapperConsumerBase {
     ERC20 public raceToken;

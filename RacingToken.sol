@@ -3,14 +3,14 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract RacingDAppToken is ERC20 {
+contract RacingToken is ERC20 {
     address public owner;
     
     // Constructor to initialize the token with a name and symbol
     // The initial supply is set to 10 million tokens
     // The owner is set to the address that deploys the contract
     // The initial supply is minted to the owner's address
-    constructor() ERC20("RacingDAppToken", "RDAPP") {
+    constructor() ERC20("RacingToken", "RDAPP") {
         owner = msg.sender;
         _mint(msg.sender, 10_000_000 * 10**18); // Initial supply
     }
