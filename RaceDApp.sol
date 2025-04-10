@@ -89,8 +89,6 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         (, , , bool registered) = horseRegistry.horses(horseId);
         require(registered, "Horse not registered");
 
-        // get address o the better
-
         address bettorAddress = userRegistry.getUser(bettorId).account;
         require(userRegistry.getUser(bettorId).active, "User not found or inactive");
         require(bettorAddress.balance > race.entryFee, "Not enough balance in contract");
@@ -121,13 +119,11 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
 
         // the totalPool in a race should be equal to the product of the bets placed and the entry fee
         uint256 totalPool = 0;
-        betRegistry = BetRegistry(msg.sender);
-        BetRegistry.Bet[] memory bets = betRegistry.getBetsByRaceId(raceId);
-        for (uint256 i = 0; i < bets.length; i++) {
-            totalPool += bets[i].amount;
+        for (uint256 i = 0; i < betRegistry.getBetsByRaceId(raceId).length; i++) {
+            totalPool += betRegistry.getBetsByRaceId(raceId)[i].amount;
         }
         require(totalPool == race.totalPool, "Total pool does not match the bets placed");
-        
+
         race.status = RaceStatus.AUDITED;
         race.auditor = userId;
         emit RaceAudited(raceId, userId);
