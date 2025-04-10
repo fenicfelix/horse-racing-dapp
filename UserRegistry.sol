@@ -8,11 +8,11 @@ contract UserRegistry is AccessControl {
     bytes32 public constant BETTOR_ROLE = keccak256("BETTOR_ROLE");
 
     struct User {
-        uint256 id; // Unique user ID
-        address account; // User's wallet address
-        string name; // User's name
-        bytes32 role; // User's role (e.g., bettor, auditor)
-        bool active; // User's status (active/inactive)
+        uint256 id;
+        address account;
+        string name;
+        bytes32 role;
+        bool active;
     }
 
     constructor(address admin) {
@@ -43,7 +43,7 @@ contract UserRegistry is AccessControl {
     }
 
     function getUser(uint256 userId) external view returns (User memory) {
-        // check if the user is already registered
+        
         if (users[userId].account == address(0)) {
             revert("User not registered");
         }
@@ -56,33 +56,33 @@ contract UserRegistry is AccessControl {
 
 
     function updateUser(uint256 userId, string memory name, address userAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        // check if the user is already registered
+        
         if (users[userId].account == address(0)) {
             revert("User not registered");
         }
-        // update the user details
+        
         users[userId].name = name;
         users[userId].account = userAddress;
         emit UserUpdated(userId, name, userAddress);
     }
 
     function activateUser(uint256 userId) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        // check if the user is already active
+        
         if (users[userId].active == true) {
             revert("User already active");
         }
-        // activate the user
+        
 
         users[userId].active = true;
         emit UserUpdated(userId, users[userId].name, users[userId].account);
     }
 
     function deactivateUser(uint256 userId) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        // check if the user is already active
+        
         if (users[userId].active == false) {
             revert("User already deactivated");
         }
-        // activate the user
+        
 
         users[userId].active = false;
         emit UserUpdated(userId, users[userId].name, users[userId].account);

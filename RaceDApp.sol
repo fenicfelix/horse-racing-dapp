@@ -35,8 +35,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     uint256 private nextRaceId = 1;
     mapping(uint256 => Race) public races;
     mapping(uint256 => VRFRequest) public vrfRequests;
-
-    // Chainlink VRF Config
+    
     uint32 constant CALLBACK_GAS_LIMIT = 300000;
     uint32 constant NUM_WORDS = 1;
     uint16 constant REQUEST_CONFIRMATIONS = 3;
@@ -117,13 +116,6 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         require(race.status == RaceStatus.LOCKED, "The race can not be audited");
         require(race.horseIds.length >= 2, "The race needs at least two players.");
 
-        // the totalPool in a race should be equal to the product of the bets placed and the entry fee
-        // uint256 totalPool = 0;
-        // for (uint256 i = 0; i < betRegistry.getBetsByRaceId(raceId).length; i++) {
-        //     totalPool += betRegistry.getBetsByRaceId(raceId)[i].amount;
-        // }
-        // require(totalPool == race.totalPool, "Total pool does not match the bets placed");
-
         race.status = RaceStatus.AUDITED;
         race.auditor = userId;
         emit RaceAudited(raceId, userId);
@@ -152,8 +144,6 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         emit RaceStarted(raceId, requestId);
     }
 
-    // Override the fulfillRandomWords function from VRFV2WrapperConsumerBase to handle the randomness response
-    // This function is called by the VRF V2 wrapper when the randomness request is fulfilled
     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
         VRFRequest storage request = vrfRequests[requestId];
         require(!request.fulfilled, "Already fulfilled");
@@ -173,14 +163,12 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         Race storage race = races[raceId];
         require(race.winningHorse != 0, "No winning horse set");
         
-        // Verify winning horse is registered
         (, , , bool registered) = horseRegistry.horses(race.winningHorse);
         require(registered, "Winning horse not registered");
 
         betRegistry = BetRegistry(msg.sender);
         BetRegistry.Bet[] memory bets = betRegistry.getBetsByRaceId(raceId);
         
-        // First pass: Count winners and validate
         uint256 totalWinners;
         for (uint256 i = 0; i < bets.length; i++) {
             if (bets[i].horseId == race.winningHorse) {
@@ -191,8 +179,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         
         require(totalWinners > 0, "No winning bets");
         uint256 prizePerWinner = race.prizePool / totalWinners;
-
-        // Second pass: Execute payouts
+        
         for (uint256 i = 0; i < bets.length; i++) {
             if (bets[i].horseId == race.winningHorse) {
                 betRegistry.payOutBet(bets[i].id, prizePerWinner);
@@ -212,7 +199,6 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     }
 
     function withdrawFees(address to) external payable { // Add ownable
-        // Only the owner can withdraw fees
         raceToken.transfer(to, raceToken.balanceOf(address(this)));
     }
 }

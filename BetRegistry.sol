@@ -7,12 +7,12 @@ import "./HorseRegistry.sol"; // Your UserRegistry contract
 contract BetRegistry {
 
     struct Bet {
-        uint256 id; // Name of the horse
-        uint256 raceId; // Race ID associated with the bet
-        uint256 userId; // User ID associated with the bet
-        uint256 horseId; // Horse ID associated with the bet
-        uint256 amount; // Bet amount
-        bool paidOut; // Indicates if the horse is registered or not
+        uint256 id;
+        uint256 raceId;
+        uint256 userId;
+        uint256 horseId;
+        uint256 amount;
+        bool paidOut;
     }
 
     uint256 private nextBetId = 1;
@@ -67,10 +67,7 @@ contract BetRegistry {
         Bet storage bet = bets[betId];
         require(!bet.paidOut, "Bet already paid out");
         require(bet.amount > 0, "Invalid bet amount");
-
-        // Assuming you have a function to transfer the amount to the user
-        // transferToUser(bet.userId, amount);
-
+        
         bet.paidOut = true;
         emit BetPaidOut(betId, bet.userId, amount);
     }
