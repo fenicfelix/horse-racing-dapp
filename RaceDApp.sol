@@ -87,11 +87,27 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         require(userRegistry.getUser(bettorId).active, "User not active");
         require(userRegistry.getUser(bettorId).balance > race.entryFee, "Not enough balance");
 
+        // Transfer ERC20 tokens
+        require(
+            raceToken.transferFrom(msg.sender, address(this), race.entryFee),
+            "Payment failed"
+        );
+        
+
         betRegistry.placeBet(raceId, bettorId, horseId, race.entryFee);
 
         // increase race total pool
         race.totalPool += race.entryFee;
         race.prizePool += race.entryFee * (WINNER_PERCENTAGE / 100); // 90% of the prize pool goes to the winner
+
+        if (address(raceToken) == address(0)) {
+            // Native ETH mode
+            require(msg.value == race.entryFee, "Incorrect ETH amount");
+        } else {
+            // ERC20 mode
+            require(msg.value == 0, "ETH not accepted");
+            require(raceToken.transferFrom(msg.sender, address(this), race.entryFee), "Token transfer failed");
+        }
         
         emit BetPlaced(raceId, horseId, bettorId, race.prizePool);
     }
