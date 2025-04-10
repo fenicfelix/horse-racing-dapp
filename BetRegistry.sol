@@ -22,8 +22,24 @@ contract BetRegistry {
     mapping(uint256 => uint256[]) private raceToBetIds;
     mapping(uint256 => uint256[]) public userBets; // Mapping from userId to an array of bet IDs
     mapping(bytes32 => uint256[]) private raceHorseToBetIds;  // Composite key → betIds
-    
+
+    event BetPlaced(uint256 betId, uint256 userId, uint256 amount);
     event BetPaidOut(uint256 betId, uint256 userId, uint256 amount);
+
+    function placeBet(uint256 raceId, uint256 userId, uint256 horseId, uint256 amount) external returns (uint256) {
+        // Perform validations
+        require(UserRegistry(msg.sender).getUser(userId).active, "Invalid user");
+        require(HorseRegistry(msg.sender).getHorse(horseId).registered, "Horse not registered");
+
+        require(amount > 0, "Invalid bet amount");
+
+        uint256 betId = nextBetId++;
+        bets[betId] = Bet(raceId, betId, userId, horseId, amount, false);
+        userBets[userId].push(betId);
+
+        emit BetPlaced(betId, userId, amount);
+        return betId;
+    }
 
     function getUserBets(uint256 userId) external view returns (uint256[] memory) {
         return userBets[userId];
@@ -57,6 +73,9 @@ contract BetRegistry {
         Bet storage bet = bets[betId];
         require(!bet.paidOut, "Bet already paid out");
         require(bet.amount > 0, "Invalid bet amount");
+
+        // Assuming you have a function to transfer the amount to the user
+        // transferToUser(bet.userId, amount);
 
         bet.paidOut = true;
         emit BetPaidOut(betId, bet.userId, amount);
