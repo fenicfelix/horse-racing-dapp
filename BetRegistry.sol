@@ -69,4 +69,15 @@ contract BetRegistry {
         return raceBetCount[raceId];
     }
 
+    function payOutBet(uint256 betId, uint256 amount) external {
+        Bet storage bet = bets[betId];
+        require(!bet.paidOut, "Bet already paid out");
+        require(bet.amount > 0, "Invalid bet amount");
+
+        // Assuming you have a function to transfer the amount to the user
+        // transferToUser(bet.userId, amount);
+
+        bet.paidOut = true;
+        emit BetPaidOut(betId, bet.userId, amount);
+    }
 }

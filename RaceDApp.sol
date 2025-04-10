@@ -36,7 +36,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     mapping(uint256 => VRFRequest) public vrfRequests;
 
     // Chainlink VRF Config
-    uint32 constant CALLBACK_GAS_LIMIT = 200000;
+    uint32 constant CALLBACK_GAS_LIMIT = 300000;
     uint32 constant NUM_WORDS = 1;
     uint16 constant REQUEST_CONFIRMATIONS = 3;
 
@@ -158,36 +158,36 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
 
     function performPayout(uint256 raceId) public {
         Race storage race = races[raceId];
-
+        require(race.winningHorse != 0, "No winning horse set");
+        
+        // Verify winning horse is registered
         (, , , bool registered) = horseRegistry.horses(race.winningHorse);
+        require(registered, "Winning horse not registered");
+
         BetRegistry betRegistry = BetRegistry(msg.sender);
-
-        uint256 totalBets = betRegistry.getTotalBetsForRace(raceId); // Should be a view function
-
-        // get the total number of bets that were placed on the winning horse
-        uint256 totalWinners = 0;
-        Bet[] storage bets = betRegistry.getBetsByRaceId(raceId);
-        for (uint256 i = 0; i < totalBets; i++) {
-            (uint256 betId, uint256 userid, uint256 horseId, uint256 amount, bool paidOut) = betRegistry.getBetsByRaceId(i);
-            if (horseId == race.winningHorse && !paidOut) {
+        BetRegistry.Bet[] memory bets = betRegistry.getBetsByRaceId(raceId);
+        
+        // First pass: Count winners and validate
+        uint256 totalWinners;
+        for (uint256 i = 0; i < bets.length; i++) {
+            if (bets[i].horseId == race.winningHorse) {
+                require(!bets[i].paidOut, "Bet already paid out");
                 totalWinners++;
             }
         }
-
-        uint256 prizePool = race.prizePool;
-        uint256 winningAmount = prizePool / totalWinners; // Divide the total amount by the number of winners
-
         
-        for (uint256 i = 0; i < totalBets; i++) {
-            BetRegistry bet = betRegistry.getBet(i);
-            if (!bet.paidOut && bet.horseId == race.winningHorse) {
-                betRegistry.payOutBet(bet.betId, winningAmount); // Payout 90% of the prize pool to the winner
-                bet.BetPaidOut(bet.betId, bet.userId, bet.amount);
+        require(totalWinners > 0, "No winning bets");
+        uint256 prizePerWinner = race.prizePool / totalWinners;
+
+        // Second pass: Execute payouts
+        for (uint256 i = 0; i < bets.length; i++) {
+            if (bets[i].horseId == race.winningHorse) {
+                betRegistry.payOutBet(bets[i].id, prizePerWinner);
             }
         }
 
+        race.prizePool = 0; // Clear the prize pool
         emit RacePayoutCompleted(raceId, race.winningHorse);
-
     }
 
     function getRaceHorses(uint256 raceId) public view returns (uint256[] memory) {
