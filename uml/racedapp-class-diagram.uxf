@@ -1,18 +1,18 @@
-<diagram program="umletino" version="15.1"><zoom_level>8</zoom_level><element><id>UMLClass</id><coordinates><x>176</x><y>728</y><w>96</w><h>88</h></coordinates><panel_attributes>Bet
+<diagram program="umletino" version="15.1"><zoom_level>9</zoom_level><element><id>UMLClass</id><coordinates><x>0</x><y>720</y><w>108</w><h>99</h></coordinates><panel_attributes>Bet
 --
 - id: uint256
 - bettorId: Bettor
 - amount:uint256
 - paidOut:bool
 --
-+ claim(): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>344</x><y>88</y><w>96</w><h>96</h></coordinates><panel_attributes>&lt;enumeration&gt;
++ claim(): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>189</x><y>0</y><w>108</w><h>108</h></coordinates><panel_attributes>&lt;enumeration&gt;
 RaceStatus
 --
 OPEN
 LOCKED
 IN_PROGRESS
 COMPLETED
-NULLIFIED</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>328</x><y>392</y><w>240</w><h>232</h></coordinates><panel_attributes>RaceDApp
+NULLIFIED</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>171</x><y>342</y><w>270</w><h>261</h></coordinates><panel_attributes>RaceDApp
 --
 - admin: address
 - races: Race[]
@@ -37,68 +37,68 @@ NULLIFIED</panel_attributes><additional_attributes></additional_attributes></ele
 + initiateRace(raceId: uint256): uint256
 + processPayouts(raceId: uint256): void
 + withdrawWinnings(betId: uint256): void
-+ verifyVRFProof(requestId: uint256, proof: bytes): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>448</x><y>88</y><w>104</w><h>80</h></coordinates><panel_attributes>&lt;enumeration&gt;
++ verifyVRFProof(requestId: uint256, proof: bytes): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>306</x><y>0</y><w>117</w><h>90</h></coordinates><panel_attributes>&lt;enumeration&gt;
 AuditResult
 --
 VALID
 INVALID_PROOF
-SUSPICIOUS_TIMING</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLNote</id><coordinates><x>344</x><y>240</y><w>264</w><h>80</h></coordinates><panel_attributes>*Key workflow:*
+SUSPICIOUS_TIMING</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLNote</id><coordinates><x>189</x><y>171</y><w>297</w><h>90</h></coordinates><panel_attributes>*Key workflow:*
 bg=yellow
 1. Bettor places bet (ERC20 tockens)
 2. Admin locks bets
 3. Chainlink VRF provides randomness
 4. Winner declared automatically
 5. Payouts are processed
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>504</x><y>312</y><w>24</w><h>96</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;100;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>224</x><y>560</y><w>120</w><h>184</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>369</x><y>252</y><w>27</w><h>108</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;100;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>54</x><y>531</y><w>135</w><h>207</h></coordinates><panel_attributes>lt=-
 m1=0..*
 m2=1
-contains &gt;</panel_attributes><additional_attributes>10;210;10;10;130;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>592</x><y>672</y><w>248</w><h>88</h></coordinates><panel_attributes>VRFVerifier
+contains &gt;</panel_attributes><additional_attributes>10;210;10;10;130;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>504</x><y>648</y><w>279</w><h>99</h></coordinates><panel_attributes>VRFVerifier
 --
 - coordinator: Address
 --
 + verifiedRequests: mapping(uint256 =&gt; bool)
 + auditTransaction(txHash: bytes32): AuditResult
-+ getProofStatus(requestId: uint256): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLNote</id><coordinates><x>672</x><y>808</y><w>264</w><h>56</h></coordinates><panel_attributes>*Audit Trail:*
++ getProofStatus(requestId: uint256): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLNote</id><coordinates><x>486</x><y>495</y><w>297</w><h>63</h></coordinates><panel_attributes>*Audit Trail:*
 bg=yellow
 - Timestamp verification
 - RequestId uniqueness
 - Proof validation
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>800</x><y>752</y><w>24</w><h>72</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>Relation</id><coordinates><x>560</x><y>592</y><w>160</w><h>96</h></coordinates><panel_attributes>lt=-
-verifies &gt;</panel_attributes><additional_attributes>180;100;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>424</x><y>616</y><w>64</w><h>88</h></coordinates><panel_attributes>lt=-
-Audits &gt;</panel_attributes><additional_attributes>10;90;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>632</x><y>536</y><w>320</w><h>64</h></coordinates><panel_attributes>VRFCoodinator
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>693</x><y>549</y><w>27</w><h>117</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;110;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>432</x><y>567</y><w>216</w><h>99</h></coordinates><panel_attributes>lt=-
+verifies &gt;</panel_attributes><additional_attributes>220;90;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>279</x><y>594</y><w>72</w><h>99</h></coordinates><panel_attributes>lt=-
+Audits &gt;</panel_attributes><additional_attributes>10;90;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>414</x><y>810</y><w>360</w><h>72</h></coordinates><panel_attributes>VRFCoodinator
 --
 --
-requestRandomWords(subId: uint64, keyHash: bytes32,...): uint256</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>784</x><y>592</y><w>64</w><h>96</h></coordinates><panel_attributes>lt=&lt;.
-validates</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>Relation</id><coordinates><x>560</x><y>552</y><w>88</w><h>32</h></coordinates><panel_attributes>lt=-
-requests &gt;</panel_attributes><additional_attributes>90;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>560</x><y>448</y><w>192</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+requestRandomWords(subId: uint64, keyHash: bytes32,...): uint256</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>639</x><y>738</y><w>72</w><h>90</h></coordinates><panel_attributes>lt=&lt;.
+validates</panel_attributes><additional_attributes>10;80;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>378</x><y>594</y><w>126</w><h>234</h></coordinates><panel_attributes>lt=-
+requests &gt;</panel_attributes><additional_attributes>100;240;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>432</x><y>405</y><w>216</w><h>45</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=0..n
 m2=1
-manages</panel_attributes><additional_attributes>10;20;220;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>176</x><y>392</y><w>120</w><h>72</h></coordinates><panel_attributes>ERC20
+manages</panel_attributes><additional_attributes>10;20;220;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>342</y><w>135</w><h>81</h></coordinates><panel_attributes>ERC20
 --
 --
 + transfer(): bool
 + transferFrom(): bool
-+ approve(): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>224</x><y>456</y><w>120</w><h>64</h></coordinates><panel_attributes>lt=-
-&lt; uses</panel_attributes><additional_attributes>10;10;10;60;130;60</additional_attributes></element><element><id>UMLClass</id><coordinates><x>752</x><y>232</y><w>104</w><h>88</h></coordinates><panel_attributes>Horse
++ approve(): bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>54</x><y>414</y><w>135</w><h>72</h></coordinates><panel_attributes>lt=-
+&lt; uses</panel_attributes><additional_attributes>10;10;10;60;130;60</additional_attributes></element><element><id>UMLClass</id><coordinates><x>648</x><y>162</y><w>117</w><h>99</h></coordinates><panel_attributes>Horse
 --
 - name: String
 - speed: uint8
 - breed: HorseBreed
-- registered: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>240</x><y>88</y><w>96</w><h>96</h></coordinates><panel_attributes>&lt;enumeration&gt;
+- registered: bool</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>72</x><y>0</y><w>108</w><h>108</h></coordinates><panel_attributes>&lt;enumeration&gt;
 HorseBreed
 --
 THOROUGHBRED
 QUARTER_HORSE
 ARABIAN
 APPALOOSA
- MUSTANG</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>792</x><y>312</y><w>88</w><h>80</h></coordinates><panel_attributes>lt=-
+ MUSTANG</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>693</x><y>252</y><w>99</w><h>90</h></coordinates><panel_attributes>lt=-
 m1=*
 m2=*
-&lt; participates</panel_attributes><additional_attributes>10;80;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>560</x><y>88</y><w>120</w><h>80</h></coordinates><panel_attributes>&lt;enumeration&gt;
+&lt; participates</panel_attributes><additional_attributes>10;80;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>432</x><y>0</y><w>135</w><h>90</h></coordinates><panel_attributes>&lt;enumeration&gt;
 UserRole
 --
 AUDITOR
-BETTOR</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>736</x><y>376</y><w>128</w><h>144</h></coordinates><panel_attributes>Race
+BETTOR</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>630</x><y>324</y><w>144</w><h>162</h></coordinates><panel_attributes>Race
 --
 - id: uint256
 - horses: Horse[]
@@ -109,7 +109,7 @@ BETTOR</panel_attributes><additional_attributes></additional_attributes></elemen
 + startRace()
 + nullifyRace()
 + completeRace()
-+ declareWinningHorse()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>376</x><y>688</y><w>104</w><h>144</h></coordinates><panel_attributes>User
++ declareWinningHorse()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>225</x><y>675</y><w>117</w><h>162</h></coordinates><panel_attributes>User
 --
 - id: uint256
 - name: String
@@ -121,11 +121,11 @@ BETTOR</panel_attributes><additional_attributes></additional_attributes></elemen
 + activate()
 + deactivate()
 + changeRole()
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>264</x><y>744</y><w>128</w><h>40</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>99</x><y>738</y><w>144</w><h>45</h></coordinates><panel_attributes>lt=-
 m1=*
 m2=1
-&lt; place</panel_attributes><additional_attributes>10;20;140;20</additional_attributes></element><element><id>Relation</id><coordinates><x>264</x><y>784</y><w>128</w><h>40</h></coordinates><panel_attributes>lt=-
+&lt; place</panel_attributes><additional_attributes>10;20;140;20</additional_attributes></element><element><id>Relation</id><coordinates><x>99</x><y>783</y><w>144</w><h>45</h></coordinates><panel_attributes>lt=-
 m1=*
 m2=1
-&lt; Audits</panel_attributes><additional_attributes>10;20;140;20</additional_attributes></element><element><id>Text</id><coordinates><x>384</x><y>624</y><w>48</w><h>24</h></coordinates><panel_attributes>Auditor
+&lt; Audits</panel_attributes><additional_attributes>10;20;140;20</additional_attributes></element><element><id>Text</id><coordinates><x>234</x><y>603</y><w>54</w><h>27</h></coordinates><panel_attributes>Auditor
 style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element></diagram>
