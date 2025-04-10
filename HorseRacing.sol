@@ -4,6 +4,7 @@ pragma solidity ^0.8.19;
 import "@chainlink/contracts/src/v0.8/vrf/VRFV2WrapperConsumerBase.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol"; // Full ERC20
 import "./HorseRegistry.sol"; // Your HorseRegistry contract
+import "./UserRegistry.sol"; // Your UserRegistry contract
 
 contract HorseRacing is VRFV2WrapperConsumerBase {
     ERC20 public raceToken;
@@ -27,6 +28,7 @@ contract HorseRacing is VRFV2WrapperConsumerBase {
 
     uint256 public nextRaceId = 1;
     mapping(uint256 => Race) public races;
+    mapping(uint256 => Bet) public bets;
     mapping(uint256 => VRFRequest) public vrfRequests;
 
     // Chainlink VRF Config
@@ -113,6 +115,11 @@ contract HorseRacing is VRFV2WrapperConsumerBase {
         request.randomWords = randomWords;
 
         (, , , bool registered) = horseRegistry.horses(race.winningHorse);
+
+        // loop all bets and pay out to anyone who bet on the winning horse
+        for (uint i = 0; i < array.length; i++) {
+            
+        }
         raceToken.transfer(winner, (race.prizePool * 90) / 100); // Winner gets 90%
 
         emit RaceCompleted(request.raceId, race.winningHorse);

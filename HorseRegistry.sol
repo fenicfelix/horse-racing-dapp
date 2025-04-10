@@ -27,7 +27,7 @@ contract HorseRegistry {
     mapping(uint256 => Horse) public horses;
 
     // Event emitted when a horse is registered
-    event HorseRegistered(uint256 horseId, string name, address owner, HorseBreed breed);
+    event HorseRegistered(uint256 horseId, string name, address horseAddress, HorseBreed breed);
 
     // Horse registration function
     function registerHorse(string memory name, uint256 speed, HorseBreed breed) external returns (uint256) {
