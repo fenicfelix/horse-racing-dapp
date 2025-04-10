@@ -54,15 +54,15 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
 
 
     constructor(
-        // address _raceToken,
-        // address _horseRegistry,
-        // address _userRegistry,
-        // address _betRegistry
+        address _raceToken,
+        address _horseRegistry,
+        address _userRegistry,
+        address _betRegistry
     ) VRFV2WrapperConsumerBase(LINK_ADDRESS, VRF_WRAPPER_ADDRESS) {
-        // raceToken = ERC20(_raceToken);
-        // horseRegistry = HorseRegistry(_horseRegistry);
-        // userRegistry = UserRegistry(_userRegistry);
-        // betRegistry = BetRegistry(_betRegistry);
+        raceToken = ERC20(_raceToken);
+        horseRegistry = HorseRegistry(_horseRegistry);
+        userRegistry = UserRegistry(_userRegistry);
+        betRegistry = BetRegistry(_betRegistry);
     }
 
 
@@ -101,6 +101,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
 
         race.totalPool += race.entryFee;
         race.prizePool += (race.entryFee * WINNER_PERCENTAGE) / 100;
+        race.horseIds.push(horseId);
 
         emit BetPlaced(raceId, horseId, bettorId, race.prizePool);
     }
