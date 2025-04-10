@@ -51,7 +51,7 @@ contract UserRegistry is AccessControl {
     }
 
     function getBalance(address userAddress) external view returns (uint256) {
-        return userAddress.balance;
+        return userAddress.balance / 10**18; // Assuming the balance is in wei
     }
 
 
