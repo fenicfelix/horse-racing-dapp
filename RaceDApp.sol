@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol"; // Full ERC20
 import "./HorseRegistry.sol"; // Your HorseRegistry contract
 import "./UserRegistry.sol"; // Your UserRegistry contract
 import "./BetRegistry.sol"; // Your UserRegistry contract
+import "./RacingDAppToken.sol"; // Your UserRegistry contract
 
 contract RaceDApp is VRFV2WrapperConsumerBase {
     ERC20 public raceToken;
@@ -51,14 +52,14 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
 
     constructor(
         address _vrfWrapper,
-        address _linkToken,
-        address _raceToken,
-        address _horseRegistry
+        address _linkToken
+        // address _raceToken,
+        // address _horseRegistry
     )
         VRFV2WrapperConsumerBase(_linkToken, _vrfWrapper)
     {
-        raceToken = ERC20(_raceToken);
-        horseRegistry = HorseRegistry(_horseRegistry);
+        // raceToken = ERC20(_raceToken);
+        // horseRegistry = HorseRegistry(_horseRegistry);
     }
 
     function createRace(uint256 entryFee) external {

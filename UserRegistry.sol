@@ -85,7 +85,7 @@ contract UserRegistry is AccessControl {
 
     function deactivateUser(uint256 userId) external onlyRole(DEFAULT_ADMIN_ROLE) {
         // check if the user is already active
-        if (users[userId].active == true) {
+        if (users[userId].active == false) {
             revert("User already deactivated");
         }
         // activate the user
