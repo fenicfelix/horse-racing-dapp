@@ -17,7 +17,6 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     uint256 constant public WINNER_PERCENTAGE = 90; // 90% of the prize pool goes to the winner
 
     enum RaceStatus { OPEN, LOCKED, AUDITED, IN_PROGRESS, OUTCOME_FOUND, COMPLETED, NULLIFIED }
-
     struct Race {
         uint256 entryFee;
         uint256[] horseIds;
@@ -27,7 +26,6 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         uint256 winningHorse;
         uint256 auditor;
     }
-
     struct VRFRequest {
         uint256 raceId;
         bool fulfilled;
@@ -56,15 +54,15 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
 
 
     constructor(
-        address _raceToken,
-        address _horseRegistry,
-        address _userRegistry,
-        address _betRegistry
+        // address _raceToken,
+        // address _horseRegistry,
+        // address _userRegistry,
+        // address _betRegistry
     ) VRFV2WrapperConsumerBase(LINK_ADDRESS, VRF_WRAPPER_ADDRESS) {
-        raceToken = ERC20(_raceToken);
-        horseRegistry = HorseRegistry(_horseRegistry);
-        userRegistry = UserRegistry(_userRegistry);
-        betRegistry = BetRegistry(_betRegistry);
+        // raceToken = ERC20(_raceToken);
+        // horseRegistry = HorseRegistry(_horseRegistry);
+        // userRegistry = UserRegistry(_userRegistry);
+        // betRegistry = BetRegistry(_betRegistry);
     }
 
 
