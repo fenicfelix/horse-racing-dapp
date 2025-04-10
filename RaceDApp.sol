@@ -32,7 +32,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         uint256[] randomWords;
     }
 
-    uint256 public nextRaceId = 1;
+    uint256 private nextRaceId = 1;
     mapping(uint256 => Race) public races;
     mapping(uint256 => VRFRequest) public vrfRequests;
 
@@ -63,9 +63,9 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     }
 
     function createRace(uint256 entryFee) external {
-        uint256 raceId = nextRaceId++;
+        nextRaceId = nextRaceId++;
 
-        races[raceId] = Race({
+        races[nextRaceId] = Race({
             entryFee: entryFee,
             horseIds: new uint256[](0),
             totalPool: 0,
@@ -75,7 +75,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
             auditor: 0
         });
 
-        emit RaceCreated(raceId, entryFee);
+        emit RaceCreated(nextRaceId, entryFee);
     }
 
     function placeBet(uint256 raceId, uint bettorId, uint256 horseId) external payable {

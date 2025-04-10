@@ -33,12 +33,12 @@ contract BetRegistry {
 
         require(amount > 0, "Invalid bet amount");
 
-        uint256 betId = nextBetId++;
-        bets[betId] = Bet(raceId, betId, userId, horseId, amount, false);
-        userBets[userId].push(betId);
+        nextBetId = nextBetId++;
+        bets[nextBetId] = Bet(raceId, nextBetId, userId, horseId, amount, false);
+        userBets[userId].push(nextBetId);
 
-        emit BetPlaced(betId, userId, amount);
-        return betId;
+        emit BetPlaced(nextBetId, userId, amount);
+        return nextBetId;
     }
 
     function getUserBets(uint256 userId) external view returns (uint256[] memory) {
