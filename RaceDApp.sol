@@ -91,8 +91,11 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         (, , , bool registered) = horseRegistry.horses(horseId);
         require(registered, "Horse not registered");
 
+        // get address o the better
+
+        address bettorAddress = userRegistry.getUser(bettorId).account;
         require(userRegistry.getUser(bettorId).active, "User not found or inactive");
-        require(address(this).balance > race.entryFee, "Not enough balance in contract");
+        require(bettorAddress.balance > race.entryFee, "Not enough balance in contract");
         require(raceToken.transferFrom(msg.sender, address(this), race.entryFee), "Token transfer failed");
 
         
