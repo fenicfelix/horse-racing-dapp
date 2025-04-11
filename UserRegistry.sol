@@ -8,11 +8,11 @@ contract UserRegistry is AccessControl {
     bytes32 public constant BETTOR_ROLE = keccak256("BETTOR_ROLE");
 
     struct User {
-        uint256 id; // Unique user ID
-        address account; // User's wallet address
-        string name; // User's name
-        bytes32 role; // User's role (e.g., bettor, auditor)
-        bool active; // User's status (active/inactive)
+        uint256 id;
+        address account;
+        string name;
+        bytes32 role;
+        bool active;
     }
 
     constructor(address admin) {
@@ -23,12 +23,11 @@ contract UserRegistry is AccessControl {
 
     uint256 private nextUserId = 1;
 
-    event UserRegistered(uint256 userid, string name, address userAddress);
-    event UserUpdated(uint256 userid, string name, address userAddress);
-
     mapping(uint256 => User) public users;
 
-    function registerUser(string memory name, address userAddress, bytes32 role) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+    event UserRegistered(uint256 userId);
+
+    function registerUser(string memory name, address userAddress, bytes32 role) external onlyRole(DEFAULT_ADMIN_ROLE) {
         // check if the user is already registered
         uint256 userId = nextUserId++;
         for (uint256 i = 1; i < 1000; i++) {
@@ -38,8 +37,8 @@ contract UserRegistry is AccessControl {
         }
 
         users[userId] = User(userId, userAddress, name, role, true);
-        emit UserRegistered(userId, name, userAddress);
-        return userId;
+
+        emit UserRegistered(userId);
     }
 
     function getUser(uint256 userId) external view returns (User memory) {
@@ -48,52 +47,5 @@ contract UserRegistry is AccessControl {
             revert("User not registered");
         }
         return users[userId];
-    }
-
-    function getBalance(address userAddress) external view returns (uint256) {
-        return userAddress.balance / 10**18; // Assuming the balance is in wei
-    }
-
-    function updateUser(uint256 userId, string memory name, address userAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        // check if the user is already registered
-        if (users[userId].account == address(0)) {
-            revert("User not registered");
-        }
-        // update the user details
-        users[userId].name = name;
-        users[userId].account = userAddress;
-        emit UserUpdated(userId, name, userAddress);
-    }
-
-    function activateUser(uint256 userId) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        // check if the user is already active
-        if (users[userId].active == true) {
-            revert("User already active");
-        }
-        // activate the user
-
-        users[userId].active = true;
-        emit UserUpdated(userId, users[userId].name, users[userId].account);
-    }
-
-    function deactivateUser(uint256 userId) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        // check if the user is already active
-        if (users[userId].active == false) {
-            revert("User already deactivated");
-        }
-        // activate the user
-
-        users[userId].active = false;
-        emit UserUpdated(userId, users[userId].name, users[userId].account);
-    }
-
-    function updateRole(uint256 userId, bytes32 NEW_ROLE) external onlyRole(DEFAULT_ADMIN_ROLE) {
-
-        if(hasRole(NEW_ROLE, users[userId].account)) {
-            revert("User already has this role");
-        }
-
-        _grantRole(NEW_ROLE, users[userId].account);
-        emit UserUpdated(userId, users[userId].name, users[userId].account);
     }
 }

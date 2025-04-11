@@ -22,15 +22,29 @@ contract BetRegistry {
     mapping(uint256 => uint256[]) private raceToBetIds;
     mapping(uint256 => uint256[]) public userBets; // Mapping from userId to an array of bet IDs
     mapping(bytes32 => uint256[]) private raceHorseToBetIds;  // Composite key → betIds
-    
+
+    event BetPlaced(uint256 betId, uint256 userId, uint256 amount);
     event BetPaidOut(uint256 betId, uint256 userId, uint256 amount);
 
     function recordBet(uint256 raceId, uint256 userId, uint256 horseId, uint256 amount) external returns (uint256) {
-        uint256 betId = nextBetId++;
-        bets[betId] = Bet(raceId, betId, userId, horseId, amount, false);
-        userBets[userId].push(betId);
-        return betId;
-    }
+    uint256 betId = nextBetId++;
+    bets[betId] = Bet({
+        id: betId,
+        raceId: raceId,
+        userId: userId,
+        horseId: horseId,
+        amount: amount,
+        paidOut: false
+    });
+
+    userBets[userId].push(betId);
+    raceToBetIds[raceId].push(betId); // Link bet to race
+    raceBetCount[raceId]++;
+
+    emit BetPlaced(betId, userId, amount);
+    return betId;
+}
+
 
     function getUserBets(uint256 userId) external view returns (uint256[] memory) {
         return userBets[userId];
@@ -58,14 +72,5 @@ contract BetRegistry {
     // Now this becomes O(1)
     function getTotalBetsForRace(uint256 raceId) external view returns (uint256) {
         return raceBetCount[raceId];
-    }
-
-    function payOutBet(uint256 betId, uint256 amount) external {
-        Bet storage bet = bets[betId];
-        require(!bet.paidOut, "Bet already paid out");
-        require(bet.amount > 0, "Invalid bet amount");
-
-        bet.paidOut = true;
-        emit BetPaidOut(betId, bet.userId, amount);
     }
 }

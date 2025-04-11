@@ -4,15 +4,13 @@ pragma solidity ^0.8.19;
 contract HorseRegistry {
     // Enum to represent different horse breeds
     enum HorseBreed {
-        THOROUGHBRED, // 1
-        QUARTER_HORSE, // 2
-        ARABIAN, // 3
-        APPALOOSA, // 4
-        MUSTANG // 5
+        THOROUGHBRED,
+        QUARTER_HORSE,
+        ARABIAN,
+        APPALOOSA,
+        MUSTANG
     }
-
-    // Struct to represent a horse
-    // Each horse has a name, speed, breed, and registration status
+    
     struct Horse {
         string name; // Name of the horse
         uint256 speed; // Speed of the horse (1-100)
@@ -26,60 +24,20 @@ contract HorseRegistry {
     // Mapping from horse ID to Horse struct
     mapping(uint256 => Horse) public horses;
 
-    // Event emitted when a horse is registered
-    event HorseRegistered(uint256 horseId, string name, address horseAddress, HorseBreed breed);
+    event HorseRegistered(uint256 horseId);
 
     // Horse registration function
     function registerHorse(string memory name, uint256 speed, HorseBreed breed) external returns (uint256) {
         // performing checks on the input parameters
-        require(speed > 0 && speed <= 100, "Invalid speed");
+        require(speed > 0 && speed <= 100, "Speed must be between 0 and 100");
         uint256 horseId = nextHorseId++;
 
         // Register the horse with default status as registered
         horses[horseId] = Horse(name, speed, breed, true);
 
-        // Emit the HorseRegistered event with the horse ID, name, and owner address
-        emit HorseRegistered(horseId, name, msg.sender, breed);
+        emit HorseRegistered(horseId);
 
         return horseId;
-    }
-
-    // Update horse details
-    function updateHorse(uint256 horseId, string memory name, uint256 speed, HorseBreed breed) external {
-        // Check if the horse is registered
-        require(horses[horseId].registered, "Horse not registered");
-
-        // Update the horse details
-        horses[horseId].name = name;
-        horses[horseId].speed = speed;
-        horses[horseId].breed = breed;
-
-        // Emit an event to indicate that the horse has been updated
-        emit HorseRegistered(horseId, name, msg.sender, breed);
-    }
-
-    // unregister a horse
-    function unregisterHorse(uint256 horseId) external {
-        // Check if the horse is registered
-        require(horses[horseId].registered, "Horse not registered");
-
-        // Unregister the horse by setting the registered status to false
-        horses[horseId].registered = false;
-
-        // Emit an event to indicate that the horse has been unregistered
-        emit HorseRegistered(horseId, horses[horseId].name, msg.sender, horses[horseId].breed);
-    }
-
-    // reregister a horse
-    function reregisterHorse(uint256 horseId) external {
-        // Check if the horse is already registered
-        require(!horses[horseId].registered, "Horse already registered");
-
-        // Reregister the horse by setting the registered status to true
-        horses[horseId].registered = true;
-
-        // Emit an event to indicate that the horse has been reregistered
-        emit HorseRegistered(horseId, horses[horseId].name, msg.sender, horses[horseId].breed);
     }
 
     // Get horse details by ID
