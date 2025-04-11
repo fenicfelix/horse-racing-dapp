@@ -112,39 +112,31 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         require(race.status == RaceStatus.LOCKED, "The race can not be audited");
         require(race.horseIds.length >= 2, "The race needs at least two players.");
 
-        // the totalPool in a race should be equal to the product of the bets placed and the entry fee
-        // uint256 totalPool = 0;
-        // for (uint256 i = 0; i < betRegistry.getBetsByRaceId(raceId).length; i++) {
-        //     totalPool += betRegistry.getBetsByRaceId(raceId)[i].amount;
-        // }
-        // require(totalPool == race.totalPool, "Total pool does not match the bets placed");
-
         race.status = RaceStatus.AUDITED;
         race.auditor = userId;
         emit RaceAudited(raceId, userId);
     }
 
+
     function startRace(uint256 raceId) external {
         Race storage race = races[raceId];
+
         require(race.status == RaceStatus.AUDITED, "Race is not audited");
         require(race.horseIds.length >= 2, "The race can not be started");
 
         race.status = RaceStatus.IN_PROGRESS;
 
-        uint256 requestId = requestRandomness(
-            CALLBACK_GAS_LIMIT,
-            REQUEST_CONFIRMATIONS,
-            NUM_WORDS
+        uint256 randomNumber = generateRandomNumber(
+            uint256(keccak256(abi.encodePacked(raceId, block.timestamp)))
         );
 
-        // Make VRF Request
-        vrfRequests[requestId] = VRFRequest({
-            raceId: raceId,
-            fulfilled: false,
-            randomWords: new uint256[](0)
-        });
+        uint256 winnerIndex = randomNumber % race.horseIds.length;
+        race.winningHorse = race.horseIds[winnerIndex];
+        race.status = RaceStatus.OUTCOME_FOUND;
 
-        emit RaceStarted(raceId, requestId);
+        race.winningHorse = race.horseIds[randomNumber % race.horseIds.length];
+
+        emit RaceStarted(raceId, randomNumber);
     }
 
     // Override the fulfillRandomWords function from VRFV2WrapperConsumerBase to handle the randomness response
@@ -211,16 +203,17 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         raceToken.transfer(to, raceToken.balanceOf(address(this)));
     }
 
-    function initializeDependencies(
-        address _raceToken,
-        address _horseRegistry,
-        address _userRegistry,
-        address _betRegistry
-    ) external {
-        require(address(raceToken) == address(0), "Already initialized");
-        raceToken = ERC20(_raceToken);
-        horseRegistry = HorseRegistry(_horseRegistry);
-        userRegistry = UserRegistry(_userRegistry);
-        betRegistry = BetRegistry(_betRegistry);
+    function generateRandomNumber(uint256 seed) public view returns (uint256) {
+        return uint256(
+            keccak256(
+                abi.encodePacked(
+                    block.timestamp,
+                    block.prevrandao,  // block.difficulty in earlier versions
+                    blockhash(block.number - 1),
+                    msg.sender,
+                    seed
+                )
+            )
+        ) % 10000;
     }
 }
