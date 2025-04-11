@@ -24,11 +24,24 @@ contract BetRegistry {
     mapping(bytes32 => uint256[]) private raceHorseToBetIds;  // Composite key → betIds
     
     event BetPaidOut(uint256 betId, uint256 userId, uint256 amount);
+    event BetPlaced(uint256 betId, uint256 userId, uint256 amount);
 
     function recordBet(uint256 raceId, uint256 userId, uint256 horseId, uint256 amount) external returns (uint256) {
         uint256 betId = nextBetId++;
-        bets[betId] = Bet(raceId, betId, userId, horseId, amount, false);
+        bets[betId] = Bet({
+            id: betId,
+            raceId: raceId,
+            userId: userId,
+            horseId: horseId,
+            amount: amount,
+            paidOut: false
+        });
+
         userBets[userId].push(betId);
+        raceToBetIds[raceId].push(betId);
+        raceBetCount[raceId]++;
+
+        emit BetPlaced(betId, userId, amount);
         return betId;
     }
 
