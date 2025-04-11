@@ -92,8 +92,10 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         address bettorAddress = userRegistry.getUser(bettorId).account;
         require(userRegistry.getUser(bettorId).active, "User not found or inactive");
         require(bettorAddress.balance > race.entryFee, "Not enough balance in contract");
+        
+        // Transfer the entry fee from the bettor to the contract
+        // This assumes the bettor has already approved the contract to spend the entry fee
         require(raceToken.transferFrom(msg.sender, address(this), race.entryFee), "Token transfer failed");
-
         
         betRegistry.recordBet(raceId, bettorId, horseId, race.entryFee);
 
@@ -161,7 +163,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         emit RaceOutcomeFound(request.raceId, race.winningHorse);
     }
 
-    function performPayout(uint256 raceId) public {
+    function performPayout(uint256 raceId) public payable {
         Race storage race = races[raceId];
         require(race.winningHorse != 0, "No winning horse set");
         
@@ -187,13 +189,31 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         // Second pass: Execute payouts
         for (uint256 i = 0; i < bets.length; i++) {
             if (bets[i].horseId == race.winningHorse) {
-                betRegistry.payOutBet(bets[i].id, prizePerWinner);
+                // get recepient address
+                require(raceToken.transferFrom(address(this), userRegistry.getUser(bets[i].userId).account, prizePerWinner), "Token transfer failed");
             }
         }
 
         race.prizePool = 0; // Clear the prize pool
         emit RacePayoutCompleted(raceId, race.winningHorse);
     }
+
+    /*
+    
+    function payOutBet(uint256 betId, uint256 amount) external {
+        Bet storage bet = bets[betId];
+        require(!bet.paidOut, "Bet already paid out");
+        require(bet.amount > 0, "Invalid bet amount");
+
+
+
+        // Assuming you have a function to transfer the amount to the user
+        // transferToUser(bet.userId, amount);
+
+        bet.paidOut = true;
+        emit BetPaidOut(betId, bet.userId, amount);
+    }
+    */
 
     function getRaceHorses(uint256 raceId) public view returns (uint256[] memory) {
         return races[raceId].horseIds;
@@ -208,7 +228,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         raceToken.transfer(to, raceToken.balanceOf(address(this)));
     }
 
-    function generateRandomNumber(uint256 seed) public view returns (uint256) {
+    function generateRandomNumber(uint256 seed) private view returns (uint256) {
         return uint256(
             keccak256(
                 abi.encodePacked(
