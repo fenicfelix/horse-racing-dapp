@@ -54,11 +54,16 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     address constant LINK_ADDRESS = 0x779877A7B0D9E8603169DdbD7836e478b4624789; // Sepolia Testnet LINK token address
     address constant VRF_WRAPPER_ADDRESS = 0xab18414CD93297B0d12ac29E63Ca20f515b3DB46; // Sepolia Testnet VRF Wrapper address
 
-    constructor() VRFV2WrapperConsumerBase(LINK_ADDRESS, VRF_WRAPPER_ADDRESS) {
-        raceToken = ERC20(msg.sender); // Replace with your token address
-        horseRegistry = HorseRegistry(msg.sender); // Replace with your HorseRegistry contract address
-        userRegistry = UserRegistry(msg.sender); // Replace with your UserRegistry contract address
-        betRegistry = BetRegistry(msg.sender); // Replace with your BetRegistry contract address
+    constructor(
+        address _raceToken,
+        address _horseRegistry,
+        address _userRegistry,
+        address _betRegistry
+    ) VRFV2WrapperConsumerBase(LINK_ADDRESS, VRF_WRAPPER_ADDRESS) {
+        raceToken = ERC20(_raceToken);
+        horseRegistry = HorseRegistry(_horseRegistry);
+        userRegistry = UserRegistry(_userRegistry);
+        betRegistry = BetRegistry(_betRegistry);
     }
 
 
