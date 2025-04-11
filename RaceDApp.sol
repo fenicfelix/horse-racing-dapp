@@ -32,7 +32,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         uint256[] randomWords;
     }
 
-    uint256 private nextRaceId = 1;
+    uint256 public nextRaceId = 1;
     mapping(uint256 => Race) public races;
     mapping(uint256 => VRFRequest) public vrfRequests;
 
@@ -42,7 +42,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     uint16 constant REQUEST_CONFIRMATIONS = 3;
 
     event RaceCreated(uint256 raceId, uint256 entryFee);
-    event BetPlaced(uint256 raceId, uint256 horseId, uint256 bettorId, uint256 prizePool);
+    event BetPlaced(uint256 raceId, uint256 bettorId, uint256 horseId);
     event RaceLocked(uint256 raceId);
     event RaceAudited(uint256 raceId, uint256 auditor);
     event RaceStarted(uint256 raceId, uint256 requestId);
@@ -53,16 +53,11 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     address constant VRF_WRAPPER_ADDRESS = 0xab18414CD93297B0d12ac29E63Ca20f515b3DB46; // Sepolia Testnet VRF Wrapper address
 
 
-    constructor(
-        address _raceToken,
-        address _horseRegistry,
-        address _userRegistry,
-        address _betRegistry
-    ) VRFV2WrapperConsumerBase(LINK_ADDRESS, VRF_WRAPPER_ADDRESS) {
-        raceToken = ERC20(_raceToken);
-        horseRegistry = HorseRegistry(_horseRegistry);
-        userRegistry = UserRegistry(_userRegistry);
-        betRegistry = BetRegistry(_betRegistry);
+    constructor() VRFV2WrapperConsumerBase(LINK_ADDRESS, VRF_WRAPPER_ADDRESS) {
+        raceToken = ERC20(msg.sender); // Replace with your token address
+        horseRegistry = HorseRegistry(msg.sender); // Replace with your HorseRegistry contract address
+        userRegistry = UserRegistry(msg.sender); // Replace with your UserRegistry contract address
+        betRegistry = BetRegistry(msg.sender); // Replace with your BetRegistry contract address
     }
 
 
@@ -101,7 +96,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         race.prizePool += (race.entryFee * WINNER_PERCENTAGE) / 100;
         race.horseIds.push(horseId);
 
-        emit BetPlaced(raceId, horseId, bettorId, race.prizePool);
+        emit BetPlaced(raceId, bettorId, horseId);
     }
        
 
@@ -214,5 +209,18 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
     function withdrawFees(address to) external payable { // Add ownable
         // Only the owner can withdraw fees
         raceToken.transfer(to, raceToken.balanceOf(address(this)));
+    }
+
+    function initializeDependencies(
+        address _raceToken,
+        address _horseRegistry,
+        address _userRegistry,
+        address _betRegistry
+    ) external {
+        require(address(raceToken) == address(0), "Already initialized");
+        raceToken = ERC20(_raceToken);
+        horseRegistry = HorseRegistry(_horseRegistry);
+        userRegistry = UserRegistry(_userRegistry);
+        betRegistry = BetRegistry(_betRegistry);
     }
 }
