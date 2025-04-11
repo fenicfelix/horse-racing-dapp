@@ -163,7 +163,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         emit RaceOutcomeFound(request.raceId, race.winningHorse);
     }
 
-    function performPayout(uint256 raceId) public payable {
+    function performPayout(uint256 raceId) public  {
         Race storage race = races[raceId];
         require(race.winningHorse != 0, "No winning horse set");
         
@@ -171,7 +171,7 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         (, , , bool registered) = horseRegistry.horses(race.winningHorse);
         require(registered, "Winning horse not registered");
 
-        betRegistry = BetRegistry(msg.sender);
+        // betRegistry = BetRegistry(msg.sender);
         BetRegistry.Bet[] memory bets = betRegistry.getBetsByRaceId(raceId);
         
         // First pass: Count winners and validate
@@ -190,7 +190,9 @@ contract RaceDApp is VRFV2WrapperConsumerBase {
         for (uint256 i = 0; i < bets.length; i++) {
             if (bets[i].horseId == race.winningHorse) {
                 // get recepient address
-                require(raceToken.transferFrom(address(this), userRegistry.getUser(bets[i].userId).account, prizePerWinner), "Token transfer failed");
+                // require(raceToken.transferFrom(address(this), userRegistry.getUser(bets[i].userId).account, prizePerWinner), "Token transfer failed");
+                require(raceToken.transfer(userRegistry.getUser(bets[i].userId).account, prizePerWinner), "Token transfer failed");
+
             }
         }
 

@@ -27,13 +27,24 @@ contract BetRegistry {
     event BetPaidOut(uint256 betId, uint256 userId, uint256 amount);
 
     function recordBet(uint256 raceId, uint256 userId, uint256 horseId, uint256 amount) external returns (uint256) {
-        uint256 betId = nextBetId++;
-        bets[betId] = Bet(raceId, betId, userId, horseId, amount, false);
-        userBets[userId].push(betId);
+    uint256 betId = nextBetId++;
+    bets[betId] = Bet({
+        id: betId,
+        raceId: raceId,
+        userId: userId,
+        horseId: horseId,
+        amount: amount,
+        paidOut: false
+    });
 
-        emit BetPlaced(betId, userId, amount);
-        return betId;
-    }
+    userBets[userId].push(betId);
+    raceToBetIds[raceId].push(betId); // Link bet to race
+    raceBetCount[raceId]++;
+
+    emit BetPlaced(betId, userId, amount);
+    return betId;
+}
+
 
     function getUserBets(uint256 userId) external view returns (uint256[] memory) {
         return userBets[userId];

@@ -54,7 +54,6 @@ contract UserRegistry is AccessControl {
         return userAddress.balance / 10**18; // Assuming the balance is in wei
     }
 
-
     function updateUser(uint256 userId, string memory name, address userAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         // check if the user is already registered
         if (users[userId].account == address(0)) {
