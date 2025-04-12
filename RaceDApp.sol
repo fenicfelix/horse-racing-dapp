@@ -3,10 +3,10 @@ pragma solidity ^0.8.19;
 
 import "@chainlink/contracts/src/v0.8/vrf/VRFV2WrapperConsumerBase.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol"; // Full ERC20
-import "./HorseRegistry.sol"; // Your HorseRegistry contract
-import "./UserRegistry.sol"; // Your UserRegistry contract
-import "./BetRegistry.sol"; // Your UserRegistry contract
-import "./RacingToken.sol"; // Your UserRegistry contract
+import "./HorseRegistry.sol";
+import "./UserRegistry.sol";
+import "./BetRegistry.sol";
+import "./RacingToken.sol";
 
 contract RaceDApp is VRFV2WrapperConsumerBase {
     ERC20 public raceToken;
